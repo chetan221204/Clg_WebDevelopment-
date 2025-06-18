@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Car Racing Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #444;
+      font-family: sans-serif;
+    }
+    #gameArea {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      margin: 20px auto;
+      background: #111;
+      overflow: hidden;
+      border: 4px solid #fff;
+    }
+    .car {
+      position: absolute;
+      width: 50px;
+      height: 100px;
+      background: red;
+      bottom: 10px;
+      left: 175px;
+      border-radius: 10px;
+    }
+    .enemy {
+      position: absolute;
+      width: 50px;
+      height: 100px;
+      background: yellow;
+      top: -100px;
+      border-radius: 10px;
+    }
+    .roadLine {
+      position: absolute;
+      width: 10px;
+      height: 60px;
+      background: white;
+      left: 195px;
+    }
+    #score {
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      margin-top: 10px;
+    }
+
+    /* Touch controls */
+    .touch-controls {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px auto 0;
+      width: 400px;
+    }
+    .btn {
+      width: 120px;
+      height: 60px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #666;
+      color: white;
+      cursor: pointer;
+    }
+    .btn:active {
+      background-color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <div id="gameArea">
+    <div class="car" id="playerCar"></div>
+  </div>
+
+  <div class="touch-controls">
+    <button class="btn" id="leftBtn">← Left</button>
+    <button class="btn" id="rightBtn">Right →</button>
+  </div>
+
+  <script>
+    const gameArea = document.getElementById("gameArea");
+    const playerCar = document.getElementById("playerCar");
+    const scoreDisplay = document.getElementById("score");
+    const leftBtn = document.getElementById("leftBtn");
+    const rightBtn = document.getElementById("rightBtn");
+
+    let game = {
+      speed: 5,
+      score: 0,
+      keys: {
+        ArrowLeft: false,
+        ArrowRight: false,
+      }
+    };
+
+    // Keyboard controls
+    document.addEventListener("keydown", (e) => {
+      if (game.keys.hasOwnProperty(e.key)) {
+        game.keys[e.key] = true;
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      if (game.keys.hasOwnProperty(e.key)) {
+        game.keys[e.key] = false;
+      }
+    });
+
+    // Touch controls
+    let leftInterval, rightInterval;
+
+    leftBtn.addEventListener("touchstart", () => {
+      game.keys.ArrowLeft = true;
+      leftInterval = setInterval(() => {
+        game.keys.ArrowLeft = true;
+      }, 50);
+    });
+
+    leftBtn.addEventListener("touchend", () => {
+      clearInterval(leftInterval);
+      game.keys.ArrowLeft = false;
+    });
+
+    rightBtn.addEventListener("touchstart", () => {
+      game.keys.ArrowRight = true;
+      rightInterval = setInterval(() => {
+        game.keys.ArrowRight = true;
+      }, 50);
+    });
+
+    rightBtn.addEventListener("touchend", () => {
+      clearInterval(rightInterval);
+      game.keys.ArrowRight = false;
+    });
+
+    function moveLines() {
+      let lines = document.querySelectorAll(".roadLine");
+      lines.forEach((line) => {
+        let top = parseInt(line.style.top);
+        if (top >= 600) {
+          line.style.top = "0px";
+        } else {
+          line.style.top = top + game.speed + "px";
+        }
+      });
+    }
+
+    function moveEnemies(playerRect) {
+      let enemies = document.querySelectorAll(".enemy");
+      enemies.forEach((enemy) => {
+        let top = parseInt(enemy.style.top);
+        if (top >= 600) {
+          enemy.style.top = "-100px";
+          enemy.style.left = Math.floor(Math.random() * 350) + "px";
+          game.score += 10;
+        } else {
+          enemy.style.top = top + game.speed + "px";
+        }
+
+        let enemyRect = enemy.getBoundingClientRect();
+        if (
+          playerRect.left < enemyRect.right &&
+          playerRect.right > enemyRect.left &&
+          playerRect.top < enemyRect.bottom &&
+          playerRect.bottom > enemyRect.top
+        ) {
+          alert("Game Over! Your Score: " + game.score);
+          window.location.reload();
+        }
+      });
+    }
+
+    function gameLoop() {
+      moveLines();
+
+      const playerRect = playerCar.getBoundingClientRect();
+
+      if (game.keys.ArrowLeft && playerCar.offsetLeft > 0) {
+        playerCar.style.left = playerCar.offsetLeft - 5 + "px";
+      }
+
+      if (game.keys.ArrowRight && playerCar.offsetLeft < 350) {
+        playerCar.style.left = playerCar.offsetLeft + 5 + "px";
+      }
+
+      moveEnemies(playerRect);
+
+      scoreDisplay.textContent = "Score: " + game.score;
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      for (let i = 0; i < 5; i++) {
+        let line = document.createElement("div");
+        line.classList.add("roadLine");
+        line.style.top = i * 120 + "px";
+        gameArea.appendChild(line);
+      }
+
+      for (let i = 0; i < 3; i++) {
+        let enemy = document.createElement("div");
+        enemy.classList.add("enemy");
+        enemy.style.top = -(i * 200) + "px";
+        enemy.style.left = Math.floor(Math.random() * 350) + "px";
+        gameArea.appendChild(enemy);
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
