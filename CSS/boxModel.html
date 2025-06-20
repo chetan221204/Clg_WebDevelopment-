@@ -9,22 +9,57 @@
             margin: 0;
             padding: 0;
         }
-        div{
-            background-color: red;
-            /* border: 2px solid black; */
-            /* height: 200px;
-            width: 200px;
-            padding: 20px;
-            margin: 20px; */
-            display: inline;
+        .container{
+            
+            height: 100vh;
+            width: 100vw;
+            background-color: bisque;
+            display: flex;
+            gap: 2px;
+            display: flex;
+            flex-direction: column;
+            
+        } 
+        .box{
+            /* margin-top:10px; */
+            height: 100px;
+            width: 100px;
+            border: 2px solid black;
+            display: flex;
+            /* flex-direction: column; */
+            
+            
+            
+            
         }
-        span{
-            background-color: aqua;
-        }
+       .box:nth-child(1){
+        background-color: blue;
+        /* display: flex;
+        justify-content: end;
+        align-items: end; */
+       }
+
+       .box:nth-child(2){
+        background-color: red;
+       }
+       .box:nth-child(3){
+        background-color: green;
+       }
+       .box:nth-child(4){
+        background-color: yellow;
+       }
+       
+       
+       
     </style>
 </head>
 <body>
-    <div> Hello</div>
-    <span>bye</span>
+   <div class="container">
+
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>    
+   </div>
 </body>
 </html>
